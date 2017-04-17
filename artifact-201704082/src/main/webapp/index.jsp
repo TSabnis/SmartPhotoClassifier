@@ -32,7 +32,7 @@
       <td colspan="2" style="font-weight:bold;">Choose what you would like to do:</td>
     </tr>
     <tr>
-      <td><a href='/hello'>Upload a photo</a></td>
+      <td><a href='/upload.jsp'>Upload a photo</a></td>
     </tr>
     <tr>
       <td><a href='/hello'>View your photos</a></td>
