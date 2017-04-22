@@ -52,7 +52,7 @@
 <table border=1>
 <tr><th>Blob Key</th></tr>
 <% for (Entity entity : photos) { %>
-      <tr><td> <img src="project20140410.appspot.com/serve?blob-key=<%=entity.getProperty("blob-key")%>" alt="image"/> </td></tr>
+      <tr><td> <img src="/serve?blob-key=<%=entity.getProperty("blob-key")%>" alt="image" height="100" width="100"/> </td></tr>
 <% } %>
 </table>
 <% } %>
