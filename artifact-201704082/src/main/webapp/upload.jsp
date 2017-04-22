@@ -14,7 +14,7 @@
 <body>
 	<p>Upload photos</p>
 	<form action="<%= blobstoreService.createUploadUrl("/upload") %>" method="post" enctype="multipart/form-data">
-        <input type="file" name="myFile">
+        <input type="file" name="myFile" multiple>
         <input type="submit" value="Submit">
     </form>
 </body>

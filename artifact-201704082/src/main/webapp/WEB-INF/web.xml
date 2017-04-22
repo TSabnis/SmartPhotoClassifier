@@ -16,6 +16,10 @@
     <servlet-name>Serve</servlet-name>
     <servlet-class>com.example.group201704082.servlets.BlobstoreServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>View</servlet-name>
+    <servlet-class>com.example.group201704082.servlets.ViewServlet</servlet-class>
+  </servlet>
   
   <servlet-mapping>
     <servlet-name>HelloAppEngine</servlet-name>
@@ -28,6 +32,10 @@
   <servlet-mapping>
     <servlet-name>Serve</servlet-name>
     <url-pattern>/serve</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>View</servlet-name>
+    <url-pattern>/view</url-pattern>
   </servlet-mapping>
   
   <welcome-file-list>

@@ -35,7 +35,7 @@
       <td><a href='/upload.jsp'>Upload a photo</a></td>
     </tr>
     <tr>
-      <td><a href='/hello'>View your photos</a></td>
+      <td><a href='/viewphotos.jsp'>View your photos</a></td>
     </tr>
   </table>
 
