@@ -1,43 +1,17 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.example.group201704082.HelloInfo" %>
-<!-- [START_EXCLUDE] -->
-<%--
-  ~ Copyright (c) 2016 Google Inc. All Rights Reserved.
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License"); you
-  ~ may not use this file except in compliance with the License. You may
-  ~ obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-  ~ implied. See the License for the specific language governing
-  ~ permissions and limitations under the License.
-  --%>
-<!-- [END_EXCLUDE] -->
 <html>
-<head>
-  <link href='//fonts.googleapis.com/css?family=Marmelad' rel='stylesheet' type='text/css'>
-  <title>Smart Photo Classifier</title>
-</head>
-<body>
-    <h1>Smart Photo Classifier</h1>
-
-  <p>Welcome to Smart Photo Classifier!</p>
-  <table>
-    <tr>
-      <td colspan="2" style="font-weight:bold;">Choose what you would like to do:</td>
-    </tr>
-    <tr>
-      <td><a href='/upload.jsp'>Upload a photo</a></td>
-    </tr>
-    <tr>
-      <td><a href='/viewphotos.jsp'>View your photos</a></td>
-    </tr>
-  </table>
-
-</body>
+	<head>
+	  <link href='//fonts.googleapis.com/css?family=Marmelad' rel='stylesheet' type='text/css'>
+	  <link href='spc_style.css' rel='stylesheet' type='text/css'>
+	  <title>Smart Photo Classifier</title>
+	</head>
+	<body>
+		<div id="container">
+		    <h1 class='elegantshadow'>Smart Photo Classifier</h1>
+		    <a class="linkbtn" href='/upload.jsp'>Upload a photo</a>
+		    <a class="linkbtn" style="float:right" href='/viewphotos.jsp'>View your photos</a>
+		</div>
+	</body>
 </html>
