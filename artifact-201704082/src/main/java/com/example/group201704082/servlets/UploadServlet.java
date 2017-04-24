@@ -19,6 +19,9 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
@@ -43,17 +46,63 @@ public class UploadServlet extends HttpServlet {
         	Entity photo = new Entity("photo", bk.getKeyString());
         	photo.setProperty("blob-key", bk.getKeyString());
         	photo.setProperty("create-time", new Date());
-        	photo.setProperty("faces", getFaces(bk.getKeyString()));
+        	
+        	String facesJson = getFaces(bk.getKeyString());
+        	int faces = 0;
+			int faceSize = 0;
+            String maxEmo = "";
+            JSONArray jsonArray;
+    		try {
+    			jsonArray = new JSONArray(facesJson);
+    			faces = jsonArray.length();
+    			if (faces > 0) {
+    	            JSONObject jObj = jsonArray.getJSONObject(0);
+    	            JSONObject faceRectangle = (JSONObject) jObj.get("faceRectangle");
+    	            JSONObject scores = (JSONObject) jObj.get("scores");
+    	            
+    	            String emotions[] = {"anger","contempt","disgust","fear","happiness","neutral","sadness","surprise"};
+    	            Double emotionScores[] = new Double[8];
+    	            emotionScores[0] = scores.getDouble("anger");
+    	            emotionScores[1] = scores.getDouble("contempt");
+    	            emotionScores[2] = scores.getDouble("disgust");
+    	            emotionScores[3] = scores.getDouble("fear");
+    	            emotionScores[4] = scores.getDouble("happiness");
+    	            emotionScores[5] = scores.getDouble("neutral");
+    	            emotionScores[6] = scores.getDouble("sadness");
+    	            emotionScores[7] = scores.getDouble("surprise");
+    	            
+    	            Double max=emotionScores[0];
+    	            int maxIndex=0;
+
+    	            for (int i1 = 0; i1 < emotionScores.length; i1++) {
+    	                if (emotionScores[i1] > max) {
+    	                    max = emotionScores[i1];
+    	                    maxIndex = i1;
+    	                }
+    	            }
+    	            
+    	            
+    	            faceSize = faceRectangle.getInt("height")*faceRectangle.getInt("width");
+    	            maxEmo = emotions[maxIndex];
+    	        }
+    			
+    			System.out.println(faceSize);
+                System.out.println(maxEmo);
+                
+    		} catch (JSONException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+        	
+    		photo.setProperty("facesJson", facesJson);
+    		photo.setProperty("faces", faces);
+    		photo.setProperty("faceSize", faceSize);
+    		photo.setProperty("emotion", maxEmo);
+        	
         	datastore.put(photo);
         }
-        
-        res.sendRedirect("/");
-
-        /*if (blobKeys == null || blobKeys.isEmpty()) {
-            res.sendRedirect("/");
-        } else {
-            res.sendRedirect("/serve?blob-key=" + blobKeys.get(0).getKeyString());
-        }*/
+    	
+    	res.sendRedirect("/");
     }
     
     public String getFaces(String blobKey) {
