@@ -23,6 +23,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 public class ViewServlet extends HttpServlet {
 	
@@ -52,6 +53,7 @@ public class ViewServlet extends HttpServlet {
 				break;
 			case "2-5":
 				facesFilter = new FilterPredicate("faces", FilterOperator.LESS_THAN_OR_EQUAL, 5);
+				q.setFilter(new FilterPredicate("faces", FilterOperator.GREATER_THAN, 2));
 				break;
 			case "5":
 				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN, 5);
@@ -60,6 +62,23 @@ public class ViewServlet extends HttpServlet {
 				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN_OR_EQUAL, 0);
 			}
 			q.setFilter(facesFilter);
+		}
+	    
+	    switch (req.getParameter("sortby")) {
+		case "faces":
+			q.addSort("faces", SortDirection.DESCENDING);
+			break;
+		case "faceSize":
+			q.addSort("faceSize", SortDirection.DESCENDING);
+			break;
+		case "imageSize":
+			q.addSort("faceSize", SortDirection.DESCENDING);
+			break;
+		case "timestamp":
+			q.addSort("create-time", SortDirection.DESCENDING);
+			break;
+		default:
+			q.addSort("create-time", SortDirection.DESCENDING);
 		}
 	    
 		PreparedQuery pq = datastore.prepare(q);

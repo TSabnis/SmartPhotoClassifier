@@ -15,10 +15,10 @@
 		<td>
 		<label for="sortby">Sort By:</label>
 		<select id="sortby" name="sortby">
+		  <option value="timestamp">Created Time (desc)</option>
 		  <option value="faces">No. of faces</option>
 		  <option value="faceSize">Size of faces (desc)</option>
 		  <option value="imageSize">Size of image (desc)</option>
-		  <option value="timestamp">Created Time (desc)</option>
 		</select>
 		</td>
 		<td>
