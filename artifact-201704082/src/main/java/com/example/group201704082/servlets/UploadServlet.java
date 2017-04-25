@@ -101,7 +101,6 @@ public class UploadServlet extends HttpServlet {
         	
         	datastore.put(photo);
         }
-    	
     	res.sendRedirect("/");
     }
     
@@ -140,4 +139,5 @@ public class UploadServlet extends HttpServlet {
             return e.getMessage();
         }
     }
+    
 }

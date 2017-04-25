@@ -15,15 +15,16 @@
 		<td>
 		<label for="sortby">Sort By:</label>
 		<select id="sortby" name="sortby">
-		  <option value="face_number">No. of faces</option>
-		  <option value="face_size">Size of faces (desc)</option>
-		  <option value="image_size">Size of image (desc)</option>
+		  <option value="faces">No. of faces</option>
+		  <option value="faceSize">Size of faces (desc)</option>
+		  <option value="imageSize">Size of image (desc)</option>
 		  <option value="timestamp">Created Time (desc)</option>
 		</select>
 		</td>
 		<td>
 		<label for="emotion">Emotion:</label>
 		<select id="emotion" name="emotion">
+		  <option value="any">Any</option>
 		  <option value="anger">anger</option>
 		  <option value="contempt">contempt</option>
 		  <option value="disgust">disgust</option>
@@ -35,8 +36,9 @@
 		</select>
 		</td>
 		<td>
-		<label for="people_number">No. of People:</label>
-		<select id="people_number" name="people_number">
+		<label for="faces">No. of People:</label>
+		<select id="faces" name="faces">
+		  <option value="any">Any</option>
 		  <option value="1">One person</option>
 		  <option value="2">Two people</option>
 		  <option value="2-5">Two to five people</option>

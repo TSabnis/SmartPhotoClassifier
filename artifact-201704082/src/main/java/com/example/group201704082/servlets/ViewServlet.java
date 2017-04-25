@@ -32,22 +32,37 @@ public class ViewServlet extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
         throws ServletException, IOException {
 		
-		Entity p1 = new Entity("photo", "p1");
-		p1.setProperty("blob-key", "AMIfv97BOZ4y33dY0mmHzsJCrD-y2EF_zBd1w97Tkq0Undy3dmKQyl48N2qW-t-gMZL69rhj3JEvjGMa0kknbwbUkAhsLFvaRR9ZhDRwr0TH3HcS_-x_ZfGl54atJVGePPhdaZ7tjFHlyDdFEZLkFdbR767srikqdC_65JYO7oD5jyVpwwUs8g5Nm46sYAMmD1B-kAQLEuDlTvvcrsYBLtudhLBKSnvyAxgxn_8xcW06vJLCXwjqHKmF4iQHeYWnj0E7YomYQN9QfUaOK2QNN1S1luulsTcB_6Gr7DGZ1MUBxxMJwoZ386sezTDgv8JXBhPKvSk_Jq23dggt4pIpZrGQlY7AQmDGeufgyybbToEu5i72DMc3NA-s5wajZvI5LcIqyROowE09");
-		p1.setProperty("create-time", new Date());
-		p1.setProperty("faces", "[testfacestring]");
-		p1.setProperty("userId", "testuser");
-		datastore.put(p1);
+		Query q = new Query("photo");
 		
-		/*Filter propertyFilter =
-	        new FilterPredicate("userId", FilterOperator.EQUAL, "testuser");*/
-	    Query q = new Query("photo");
+	    String faces = req.getParameter("faces");
 	    
-	    /*List<Entity> results =
-	        datastore.prepare(q.setKeysOnly()).asList(FetchOptions.Builder.withDefaults());
-	      System.out.println("Result size: "+results.size());*/
+	    if (!req.getParameter("emotion").equals("any")) {
+	    	Filter emotionFilter = new FilterPredicate("emotion", FilterOperator.EQUAL, req.getParameter("emotion"));
+	    	q.setFilter(emotionFilter);
+	    }
 	    
-	    PreparedQuery pq = datastore.prepare(q);
+	    if (!faces.equals("any")) {
+	    	Filter facesFilter;
+			switch (faces) {
+			case "1":
+				facesFilter = new FilterPredicate("faces", FilterOperator.EQUAL, 1);
+				break;
+			case "2":
+				facesFilter = new FilterPredicate("faces", FilterOperator.EQUAL, 2);
+				break;
+			case "2-5":
+				facesFilter = new FilterPredicate("faces", FilterOperator.LESS_THAN_OR_EQUAL, 5);
+				break;
+			case "5":
+				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN, 5);
+				break;
+			default:
+				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN_OR_EQUAL, 0);
+			}
+			q.setFilter(facesFilter);
+		}
+	    
+		PreparedQuery pq = datastore.prepare(q);
 	    List<Entity> results = pq.asList(FetchOptions.Builder.withDefaults());
 		System.out.println("Result size: "+results.size());
 		
@@ -55,16 +70,101 @@ public class ViewServlet extends HttpServlet {
 		session.setAttribute("photos", results);
 		
 		res.sendRedirect("/viewphotos.jsp");
-		      
-		/*res.setContentType("text/html");
-	    res.setCharacterEncoding("UTF-8");
-	    PrintWriter w = res.getWriter();
-	    w.println("<!DOCTYPE html>");
-	    w.println("<meta charset=\"utf-8\">");
-	    w.println("<title>View Photos Response</title>");
-	    w.println("<body><p>"+"Result size: "+results.size()+"</p></body>");
-	    w.println("</html>");*/
 		
 	}
+	
+public void doTestInserts() {
+    	
+    	Entity p1 = new Entity("p1", "bk1");
+    	p1.setProperty("blob-key", "bk1");
+    	p1.setProperty("create-time", new Date());
+    	p1.setProperty("facesJson", "");
+    	p1.setProperty("faces", 1);
+    	p1.setProperty("faceSize", 100);
+    	p1.setProperty("emotion", "anger");
+    	datastore.put(p1);
+    	
+    	Entity p2 = new Entity("p2", "bk2");
+    	p2.setProperty("blob-key", "bk2");
+    	p2.setProperty("create-time", new Date());
+    	p2.setProperty("facesJson", "");
+    	p2.setProperty("faces", 2);
+    	p2.setProperty("faceSize", 200);
+    	p2.setProperty("emotion", "anger");
+    	datastore.put(p2);
+    	
+    	Entity p3 = new Entity("p3", "bk3");
+    	p3.setProperty("blob-key", "bk3");
+    	p3.setProperty("create-time", new Date());
+    	p3.setProperty("facesJson", "");
+    	p3.setProperty("faces", 3);
+    	p3.setProperty("faceSize", 300);
+    	p3.setProperty("emotion", "contempt");
+    	datastore.put(p3);
+    	
+    	Entity p4 = new Entity("p4", "bk4");
+    	p4.setProperty("blob-key", "bk4");
+    	p4.setProperty("create-time", new Date());
+    	p4.setProperty("facesJson", "");
+    	p4.setProperty("faces", 4);
+    	p4.setProperty("faceSize", 400);
+    	p4.setProperty("emotion", "contempt");
+    	datastore.put(p4);
+    	
+    	Entity p5 = new Entity("p5", "bk5");
+    	p5.setProperty("blob-key", "bk5");
+    	p5.setProperty("create-time", new Date());
+    	p5.setProperty("facesJson", "");
+    	p5.setProperty("faces", 5);
+    	p5.setProperty("faceSize", 500);
+    	p5.setProperty("emotion", "disgust");
+    	datastore.put(p5);
+    	
+    	Entity p6 = new Entity("p6", "bk6");
+    	p6.setProperty("blob-key", "bk6");
+    	p6.setProperty("create-time", new Date());
+    	p6.setProperty("facesJson", "");
+    	p6.setProperty("faces", 6);
+    	p6.setProperty("faceSize", 600);
+    	p6.setProperty("emotion", "fear");
+    	datastore.put(p6);
+    	
+    	Entity p7 = new Entity("p7", "bk7");
+    	p7.setProperty("blob-key", "bk7");
+    	p7.setProperty("create-time", new Date());
+    	p7.setProperty("facesJson", "");
+    	p7.setProperty("faces", 7);
+    	p7.setProperty("faceSize", 700);
+    	p7.setProperty("emotion", "happiness");
+    	datastore.put(p7);
+    	
+    	Entity p8 = new Entity("p8", "bk8");
+    	p8.setProperty("blob-key", "bk8");
+    	p8.setProperty("create-time", new Date());
+    	p8.setProperty("facesJson", "");
+    	p8.setProperty("faces", 8);
+    	p8.setProperty("faceSize", 800);
+    	p8.setProperty("emotion", "neutral");
+    	datastore.put(p8);
+    	
+    	Entity p9 = new Entity("p9", "bk9");
+    	p9.setProperty("blob-key", "bk9");
+    	p9.setProperty("create-time", new Date());
+    	p9.setProperty("facesJson", "");
+    	p9.setProperty("faces", 9);
+    	p9.setProperty("faceSize", 900);
+    	p9.setProperty("emotion", "sadness");
+    	datastore.put(p9);
+    	
+    	Entity p10 = new Entity("p10", "bk10");
+    	p10.setProperty("blob-key", "bk10");
+    	p10.setProperty("create-time", new Date());
+    	p10.setProperty("facesJson", "");
+    	p10.setProperty("faces", 10);
+    	p10.setProperty("faceSize", 1000);
+    	p10.setProperty("emotion", "surprise");
+    	datastore.put(p10);
+    	
+    }
 
 }
