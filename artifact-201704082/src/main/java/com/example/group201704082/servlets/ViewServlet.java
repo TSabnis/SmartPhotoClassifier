@@ -2,6 +2,8 @@ package com.example.group201704082.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -64,26 +66,51 @@ public class ViewServlet extends HttpServlet {
 			q.setFilter(facesFilter);
 		}
 	    
-	    switch (req.getParameter("sortby")) {
-		case "faces":
-			q.addSort("faces", SortDirection.DESCENDING);
-			break;
-		case "faceSize":
-			q.addSort("faceSize", SortDirection.DESCENDING);
-			break;
-		case "imageSize":
-			q.addSort("faceSize", SortDirection.DESCENDING);
-			break;
-		case "timestamp":
-			q.addSort("create-time", SortDirection.DESCENDING);
-			break;
-		default:
-			q.addSort("create-time", SortDirection.DESCENDING);
-		}
-	    
-		PreparedQuery pq = datastore.prepare(q);
+	    PreparedQuery pq = datastore.prepare(q);
 	    List<Entity> results = pq.asList(FetchOptions.Builder.withDefaults());
 		System.out.println("Result size: "+results.size());
+		
+		switch (req.getParameter("sortby")) {
+		case "faces":
+			Collections.sort(results, new Comparator<Entity>() {
+				@Override
+				public int compare(Entity o1, Entity o2) {
+					return ((Long)o2.getProperty("faces")).compareTo((Long)o1.getProperty("faces"));
+				}
+			});
+			break;
+		case "faceSize":
+			Collections.sort(results, new Comparator<Entity>() {
+				@Override
+				public int compare(Entity o1, Entity o2) {
+					return ((Long)o2.getProperty("faceSize")).compareTo((Long)o1.getProperty("faceSize"));
+				}
+			});
+			break;
+		case "imageSize":
+			Collections.sort(results, new Comparator<Entity>() {
+				@Override
+				public int compare(Entity o1, Entity o2) {
+					return ((Long)o2.getProperty("imageSize")).compareTo((Long)o1.getProperty("imageSize"));
+				}
+			});
+			break;
+		case "timestamp":
+			Collections.sort(results, new Comparator<Entity>() {
+				@Override
+				public int compare(Entity o1, Entity o2) {
+					return ((Date)o2.getProperty("create-time")).compareTo((Date)o1.getProperty("create-time"));
+				}
+			});
+			break;
+		default:
+			Collections.sort(results, new Comparator<Entity>() {
+				@Override
+				public int compare(Entity o1, Entity o2) {
+					return ((Date)o2.getProperty("create-time")).compareTo((Date)o1.getProperty("create-time"));
+				}
+			});
+		}
 		
 		HttpSession session = req.getSession(true);
 		session.setAttribute("photos", results);
