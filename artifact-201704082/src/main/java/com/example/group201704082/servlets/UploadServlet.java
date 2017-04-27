@@ -2,6 +2,7 @@ package com.example.group201704082.servlets;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -41,6 +43,7 @@ public class UploadServlet extends HttpServlet {
 
         Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(req);
         List<BlobKey> blobKeys = blobs.get("myFile");
+        List<Entity> photos = new ArrayList<Entity>();
         
         for (BlobKey bk : blobKeys) {
         	Entity photo = new Entity("photo", bk.getKeyString());
@@ -100,8 +103,13 @@ public class UploadServlet extends HttpServlet {
     		photo.setProperty("emotion", maxEmo);
         	
         	datastore.put(photo);
+        	photos.add(photo);
         }
-    	res.sendRedirect("/");
+        
+        HttpSession session = req.getSession(true);
+		session.setAttribute("photos", photos);
+		
+    	res.sendRedirect("/tagphotos.jsp");
     }
     
     public String getFaces(String blobKey) {

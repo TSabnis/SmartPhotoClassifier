@@ -45,20 +45,25 @@
 		  <option value="5">More than five people</option>
 		</select>
 		</td>
+		<td>
+			<label for="tags">People Tagged:</label>
+			<input type="text" id="tags" name="tags">
+		</td>
 		<td><input type="submit" value="Apply"></td>
 	</tr>
 </table>
+</form>
 
 <% List<Entity> photos = (List<Entity>) session.getAttribute("photos"); %>
 <% if (photos!=null) { %>
-<table border=1>
-<tr><th>Blob Key</th></tr>
+<table>
+<tr><th>Your Photos:</th></tr>
 <% for (Entity entity : photos) { %>
       <tr><td> <img src="/serve?blob-key=<%=entity.getProperty("blob-key")%>" alt="image" height="100" width="100"/> </td></tr>
 <% } %>
 </table>
 <% } %>
 <% session.removeAttribute("photos"); %>
-</form>
+
 </body>
 </html>

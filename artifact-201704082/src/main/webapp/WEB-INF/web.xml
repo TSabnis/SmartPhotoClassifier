@@ -20,6 +20,10 @@
     <servlet-name>View</servlet-name>
     <servlet-class>com.example.group201704082.servlets.ViewServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>Tag</servlet-name>
+    <servlet-class>com.example.group201704082.servlets.TagServlet</servlet-class>
+  </servlet>
   
   <servlet-mapping>
     <servlet-name>HelloAppEngine</servlet-name>
@@ -36,6 +40,10 @@
   <servlet-mapping>
     <servlet-name>View</servlet-name>
     <url-pattern>/view</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Tag</servlet-name>
+    <url-pattern>/tag</url-pattern>
   </servlet-mapping>
   
   <welcome-file-list>
