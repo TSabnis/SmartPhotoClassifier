@@ -13,14 +13,6 @@
 <% List<Entity> photos = (List<Entity>) session.getAttribute("photos"); %>
 <table>
 <tr><th>Photos</th><th>Tags</th></tr>
-<tr>
- 	<td> <img src="test1" alt="image1" height="200" width="200"/> </td>
- 	<td><input type="text" id="test1" name="test1" width="200"/></td>
- </tr>
- <tr>
- 	<td> <img src="test2" alt="image2" height="200" width="200"/> </td>
- 	<td><input type="text" id="test2" name="test2" width="200"/></td>
- </tr>
 <% if (photos!=null) { %>
 <% for (Entity entity : photos) { %>
       <tr>

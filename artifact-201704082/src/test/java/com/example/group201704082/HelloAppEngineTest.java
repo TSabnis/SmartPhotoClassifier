@@ -86,4 +86,9 @@ public class HelloAppEngineTest {
       .named("HelloInfo.getInfo")
       .containsMatch("^Version:\\s+.+OS:\\s+.+User:\\s");
   }*/
+	
+	@Test
+	  public void HelloInfo_test() {
+	    System.out.println("Ran test");
+	  }
 }

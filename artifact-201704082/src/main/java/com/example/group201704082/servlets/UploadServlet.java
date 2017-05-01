@@ -54,6 +54,7 @@ public class UploadServlet extends HttpServlet {
         	int faces = 0;
 			int faceSize = 0;
             String maxEmo = "";
+            String faceId = "";
             JSONArray jsonArray;
     		try {
     			jsonArray = new JSONArray(facesJson);
@@ -61,7 +62,8 @@ public class UploadServlet extends HttpServlet {
     			if (faces > 0) {
     	            JSONObject jObj = jsonArray.getJSONObject(0);
     	            JSONObject faceRectangle = (JSONObject) jObj.get("faceRectangle");
-    	            JSONObject scores = (JSONObject) jObj.get("scores");
+    	            JSONObject scores = (JSONObject)((JSONObject) jObj.get("faceAttributes")).get("emotion");
+    	            faceId = jObj.getString("faceId");
     	            
     	            String emotions[] = {"anger","contempt","disgust","fear","happiness","neutral","sadness","surprise"};
     	            Double emotionScores[] = new Double[8];
@@ -101,6 +103,7 @@ public class UploadServlet extends HttpServlet {
     		photo.setProperty("faces", faces);
     		photo.setProperty("faceSize", faceSize);
     		photo.setProperty("emotion", maxEmo);
+    		photo.setProperty("faceId", faceId);
         	
         	datastore.put(photo);
         	photos.add(photo);
@@ -108,11 +111,50 @@ public class UploadServlet extends HttpServlet {
         
         HttpSession session = req.getSession(true);
 		session.setAttribute("photos", photos);
-		
+    	System.out.println("Faces: "+getFaces(""));
     	res.sendRedirect("/tagphotos.jsp");
+    	
     }
     
     public String getFaces(String blobKey) {
+    	try
+        {
+        	HttpClient httpClient = new DefaultHttpClient();
+        	
+        	URIBuilder uriBuilder = new URIBuilder("https://westus.api.cognitive.microsoft.com/face/v1.0/detect");
+
+            uriBuilder.setParameter("returnFaceId", "true");
+            uriBuilder.setParameter("returnFaceLandmarks", "false");
+            uriBuilder.setParameter("returnFaceAttributes", "emotion");
+
+            URI uri = uriBuilder.build();
+            HttpPost request = new HttpPost(uri);
+
+            // Request headers. Replace the example key below with your valid subscription key.
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Ocp-Apim-Subscription-Key", "9b07c2846f7648349fce895a4b6acbce");
+
+            // Request body. Replace the example URL below with the URL of the image you want to analyze.
+            StringEntity reqEntity = new StringEntity("{\"url\":\"https://project20140410.appspot.com/serve?blob-key="+blobKey+"\"}");
+            //StringEntity reqEntity = new StringEntity("{\"url\":\"http://dreamatico.com/data_images/face/face-2.jpg\" }");
+            request.setEntity(reqEntity);
+
+            HttpResponse response = httpClient.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            if (entity != null)
+            {
+                return (EntityUtils.toString(entity));
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    	return "entity is null";
+    }
+    
+    public String getEmotions(String blobKey) {
         HttpClient httpClient = new DefaultHttpClient();
 
         try {
