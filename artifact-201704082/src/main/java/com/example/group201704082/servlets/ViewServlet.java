@@ -115,7 +115,7 @@ public class ViewServlet extends HttpServlet {
 			int tagsFound = 0;
 			for (int i=0; i<tags.length; i++) {
 				System.out.println("tags[i]: "+tags[i]);
-				if (((String)photo.getProperty("tagsString")).contains(tags[i])) {
+				if (photo.getProperty("tagsString") != null && ((String)photo.getProperty("tagsString")).contains(tags[i])) {
 					tagsFound++;
 				}
 			}

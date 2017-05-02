@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
 
 public class UploadServlet extends HttpServlet {
 	
@@ -44,76 +47,172 @@ public class UploadServlet extends HttpServlet {
         Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(req);
         List<BlobKey> blobKeys = blobs.get("myFile");
         List<Entity> photos = new ArrayList<Entity>();
+        Map<String,Map<String,String>> photoFaceIdMap = new HashMap<String,Map<String,String>>();
         
         for (BlobKey bk : blobKeys) {
+        	
+        	String facesJson = getFaces(bk.getKeyString());
+        	if (facesJson == null) {
+        		continue;
+        	}
         	Entity photo = new Entity("photo", bk.getKeyString());
         	photo.setProperty("blob-key", bk.getKeyString());
         	photo.setProperty("create-time", new Date());
-        	
-        	String facesJson = getFaces(bk.getKeyString());
         	int faces = 0;
 			int faceSize = 0;
             String maxEmo = "";
-            String faceId = "";
+            Map<String,String> faceIdMap = new HashMap<String,String>();
             JSONArray jsonArray;
     		try {
     			jsonArray = new JSONArray(facesJson);
     			faces = jsonArray.length();
-    			if (faces > 0) {
-    	            JSONObject jObj = jsonArray.getJSONObject(0);
-    	            JSONObject faceRectangle = (JSONObject) jObj.get("faceRectangle");
-    	            JSONObject scores = (JSONObject)((JSONObject) jObj.get("faceAttributes")).get("emotion");
-    	            faceId = jObj.getString("faceId");
-    	            
-    	            String emotions[] = {"anger","contempt","disgust","fear","happiness","neutral","sadness","surprise"};
-    	            Double emotionScores[] = new Double[8];
-    	            emotionScores[0] = scores.getDouble("anger");
-    	            emotionScores[1] = scores.getDouble("contempt");
-    	            emotionScores[2] = scores.getDouble("disgust");
-    	            emotionScores[3] = scores.getDouble("fear");
-    	            emotionScores[4] = scores.getDouble("happiness");
-    	            emotionScores[5] = scores.getDouble("neutral");
-    	            emotionScores[6] = scores.getDouble("sadness");
-    	            emotionScores[7] = scores.getDouble("surprise");
-    	            
-    	            Double max=emotionScores[0];
-    	            int maxIndex=0;
-
-    	            for (int i1 = 0; i1 < emotionScores.length; i1++) {
-    	                if (emotionScores[i1] > max) {
-    	                    max = emotionScores[i1];
-    	                    maxIndex = i1;
-    	                }
-    	            }
-    	            
-    	            
-    	            faceSize = faceRectangle.getInt("height")*faceRectangle.getInt("width");
-    	            maxEmo = emotions[maxIndex];
-    	        }
     			
-    			System.out.println(faceSize);
-                System.out.println(maxEmo);
+    			for(int i=0;i<faces;i++) {
+	            	
+	            	JSONObject faceJson = jsonArray.getJSONObject(i);
+    	            JSONObject faceRectangle = (JSONObject) faceJson.get("faceRectangle");
+    	            
+    	            if (i==0) {
+    	            	JSONObject scores = (JSONObject)((JSONObject) faceJson.get("faceAttributes")).get("emotion");
+        	            
+        	            String emotions[] = {"anger","contempt","disgust","fear","happiness","neutral","sadness","surprise"};
+        	            Double emotionScores[] = new Double[8];
+        	            emotionScores[0] = scores.getDouble("anger");
+        	            emotionScores[1] = scores.getDouble("contempt");
+        	            emotionScores[2] = scores.getDouble("disgust");
+        	            emotionScores[3] = scores.getDouble("fear");
+        	            emotionScores[4] = scores.getDouble("happiness");
+        	            emotionScores[5] = scores.getDouble("neutral");
+        	            emotionScores[6] = scores.getDouble("sadness");
+        	            emotionScores[7] = scores.getDouble("surprise");
+        	            
+        	            Double max=emotionScores[0];
+        	            int maxIndex=0;
+
+        	            for (int i1 = 0; i1 < emotionScores.length; i1++) {
+        	                if (emotionScores[i1] > max) {
+        	                    max = emotionScores[i1];
+        	                    maxIndex = i1;
+        	                }
+        	            }
+        	            faceSize = faceRectangle.getInt("height")*faceRectangle.getInt("width");
+        	            maxEmo = emotions[maxIndex];
+    	            }
+	            	
+	            	String similarityJson = findSimilar(faceJson.getString("faceId"));
+	            	JSONArray similarityJsonArray = new JSONArray(similarityJson);
+	            	JSONObject similarityObj = similarityJsonArray.getJSONObject(0);
+	            	if (similarityObj.getDouble("confidence")>0.5) {
+	            		faceIdMap.put(faceJson.getString("faceId"),similarityObj.getString("persistedFaceId"));
+	            	}
+	            	else {
+	            		faceIdMap.put(faceJson.getString("faceId"),
+	            				addFace(bk.getKeyString(), 
+	            						faceRectangle.getInt("left"), faceRectangle.getInt("top"), faceRectangle.getInt("width"), faceRectangle.getInt("height")));
+	            	}
+	            }
+    			
+    			photoFaceIdMap.put(bk.getKeyString(), faceIdMap);
+    			
+                photo.setProperty("facesJson", facesJson);
+        		photo.setProperty("faces", faces);
+        		photo.setProperty("faceSize", faceSize);
+        		photo.setProperty("emotion", maxEmo);
+            	
+            	datastore.put(photo);
+            	photos.add(photo);
                 
     		} catch (JSONException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
     		}
-        	
-    		photo.setProperty("facesJson", facesJson);
-    		photo.setProperty("faces", faces);
-    		photo.setProperty("faceSize", faceSize);
-    		photo.setProperty("emotion", maxEmo);
-    		photo.setProperty("faceId", faceId);
-        	
-        	datastore.put(photo);
-        	photos.add(photo);
+    		
         }
-        
+        List<Entity> faces = datastore.prepare(new Query("face")).asList(FetchOptions.Builder.withDefaults());
+        Map<String,String> faceNameMap = new HashMap<String,String>();
+        for (Entity face : faces) {
+        	faceNameMap.put(face.getProperty("persistedFaceId").toString(), face.getProperty("taggedName").toString());
+        }
         HttpSession session = req.getSession(true);
 		session.setAttribute("photos", photos);
-    	System.out.println("Faces: "+getFaces(""));
-    	res.sendRedirect("/tagphotos.jsp");
+		session.setAttribute("faceNameMap", faceNameMap);
+		session.setAttribute("photoFaceIdMap", photoFaceIdMap);
+		res.sendRedirect("/tagphotos.jsp");
     	
+    }
+    
+    public String addFace(String blobKey, int left, int top, int width, int height) {
+    	try
+        {
+        	HttpClient httpClient = new DefaultHttpClient();
+        	
+        	URIBuilder uriBuilder = new URIBuilder("https://westus.api.cognitive.microsoft.com/face/v1.0/facelists/facelistid1/persistedFaces");
+
+            uriBuilder.setParameter("faceListId", "facelistid1");
+            uriBuilder.setParameter("targetFace", left+","+top+","+width+","+height);
+
+            URI uri = uriBuilder.build();
+            HttpPost request = new HttpPost(uri);
+
+            // Request headers. Replace the example key below with your valid subscription key.
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Ocp-Apim-Subscription-Key", "9b07c2846f7648349fce895a4b6acbce");
+
+            // Request body. Replace the example URL below with the URL of the image you want to analyze.
+            StringEntity reqEntity = new StringEntity("{\"url\":\"https://project20140410.appspot.com/serve?blob-key="+blobKey+"\"}");
+            request.setEntity(reqEntity);
+
+            HttpResponse response = httpClient.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            if (entity != null)
+            {
+            	JSONObject jsonObj = new JSONObject(EntityUtils.toString(entity));
+            	return jsonObj.getString("persistedFaceId");
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    	return null;
+    }
+    
+    public String findSimilar(String faceId) {
+    	try
+        {
+        	HttpClient httpClient = new DefaultHttpClient();
+        	
+        	URIBuilder uriBuilder = new URIBuilder("https://westus.api.cognitive.microsoft.com/face/v1.0/findsimilars");
+
+            URI uri = uriBuilder.build();
+            HttpPost request = new HttpPost(uri);
+
+            // Request headers. Replace the example key below with your valid subscription key.
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Ocp-Apim-Subscription-Key", "9b07c2846f7648349fce895a4b6acbce");
+
+            StringEntity reqEntity = new StringEntity("{"+    
+				    "\"faceId\":\""+faceId+"\","+
+				    "\"faceListId\":\"facelistid1\","+
+				    "\"maxNumOfCandidatesReturned\":1,"+
+				    "\"mode\": \"matchFace\""+
+				"}");
+            request.setEntity(reqEntity);
+
+            HttpResponse response = httpClient.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            if (entity != null)
+            {
+                return EntityUtils.toString(entity);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    	return null;
     }
     
     public String getFaces(String blobKey) {
@@ -140,6 +239,9 @@ public class UploadServlet extends HttpServlet {
             request.setEntity(reqEntity);
 
             HttpResponse response = httpClient.execute(request);
+            if (response.getStatusLine().getStatusCode() != 200) {
+            	return null;
+            }
             HttpEntity entity = response.getEntity();
 
             if (entity != null)
@@ -150,8 +252,9 @@ public class UploadServlet extends HttpServlet {
         catch (Exception e)
         {
             System.out.println(e.getMessage());
+            return null;
         }
-    	return "entity is null";
+    	return null;
     }
     
     public String getEmotions(String blobKey) {
