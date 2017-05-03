@@ -34,11 +34,14 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 public class UploadServlet extends HttpServlet {
 	
 	private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	private UserService userService = UserServiceFactory.getUserService();
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -118,6 +121,7 @@ public class UploadServlet extends HttpServlet {
         		photo.setProperty("faces", faces);
         		photo.setProperty("faceSize", faceSize);
         		photo.setProperty("emotion", maxEmo);
+        		photo.setProperty("userId", userService.getCurrentUser().getUserId());
             	
             	datastore.put(photo);
             	photos.add(photo);

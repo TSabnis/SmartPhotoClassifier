@@ -3,7 +3,10 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.google.appengine.api.datastore.Entity" %>
+<%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
+<%@ page import="com.google.appengine.api.users.UserService" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<% UserService userService = UserServiceFactory.getUserService(); %>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -20,17 +23,19 @@
 <nav class="navbar navbar-default">
  <div class="container-fluid">
    <div class="navbar-header">
-     <a class="navbar-brand" href="#">Smart Photo Classifier</a>
+     <a class="navbar-brand" href="/home.jsp">Smart Photo Classifier</a>
    </div>
    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
      <ul class="nav navbar-nav navbar-right">
        <li class="dropdown">
-         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Logged UserName <span class="caret"></span></a>
+         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+         <%=userService.getCurrentUser().getNickname() %>
+         <span class="caret"></span></a>
          <ul class="dropdown-menu">
            <li><a href="#">User Profile</a></li>
            <li><a href="#">User Setting</a></li>
            <li role="separator" class="divider"></li>
-           <li><a href="#">Sign out</a></li>
+           <li><a href="<%=userService.createLogoutURL("/") %>">Sign out</a></li>
          </ul>
        </li>
      </ul>
@@ -72,5 +77,7 @@
 </tr>
 </table>
 </form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </body>
 </html>

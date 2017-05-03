@@ -46,7 +46,7 @@ public class TagServlet extends HttpServlet {
 		datastore.put(photos);
 		datastore.put(faces);
 		session.removeAttribute("photos");
-		res.sendRedirect("/");
+		res.sendRedirect("/home.jsp");
 	}
 
 }

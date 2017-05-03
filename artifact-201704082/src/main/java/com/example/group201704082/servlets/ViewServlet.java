@@ -19,13 +19,18 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 public class ViewServlet extends HttpServlet {
 	
 	private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	private UserService userService = UserServiceFactory.getUserService();
 	
 	@Override
     public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -34,15 +39,15 @@ public class ViewServlet extends HttpServlet {
 		Query q = new Query("photo");
 		
 	    String faces = req.getParameter("faces");
+	    Filter userFilter=null, emotionFilter=null, facesFilter=null;
+	    userFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userService.getCurrentUser().getUserId());
 	    
 	    if (!req.getParameter("emotion").equals("any")) {
-	    	Filter emotionFilter = new FilterPredicate("emotion", FilterOperator.EQUAL, req.getParameter("emotion"));
-	    	q.setFilter(emotionFilter);
+	    	emotionFilter = new FilterPredicate("emotion", FilterOperator.EQUAL, req.getParameter("emotion"));
 	    }
 	    
 	    if (!faces.equals("any")) {
-	    	Filter facesFilter;
-			switch (faces) {
+	    	switch (faces) {
 			case "1":
 				facesFilter = new FilterPredicate("faces", FilterOperator.EQUAL, 1);
 				break;
@@ -61,8 +66,26 @@ public class ViewServlet extends HttpServlet {
 			default:
 				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN_OR_EQUAL, 0);
 			}
-			q.setFilter(facesFilter);
 		}
+	    
+	    if (!req.getParameter("emotion").equals("any") && !faces.equals("any")) {
+	    	CompositeFilter finalFilter =
+	    		    CompositeFilterOperator.and(userFilter, emotionFilter, facesFilter);
+	    	q.setFilter(finalFilter);
+	    }
+	    else if (!req.getParameter("emotion").equals("any")) {
+	    	CompositeFilter finalFilter =
+	    		    CompositeFilterOperator.and(userFilter, emotionFilter);
+	    	q.setFilter(finalFilter);
+	    }
+	    else if (!faces.equals("any")) {
+	    	CompositeFilter finalFilter =
+	    		    CompositeFilterOperator.and(userFilter, facesFilter);
+	    	q.setFilter(finalFilter);
+	    }
+	    else {
+	    	q.setFilter(userFilter);
+	    }
 	    
 	    PreparedQuery pq = datastore.prepare(q);
 	    List<Entity> results = pq.asList(FetchOptions.Builder.withDefaults());

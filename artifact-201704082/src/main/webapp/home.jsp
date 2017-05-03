@@ -35,13 +35,24 @@
 	    </div>
 	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	      <ul class="nav navbar-nav navbar-right">
-	        <li><a style="float:left" href="<%=userService.createLoginURL("/home.jsp") %>">Login</a></li>
+	        <li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+	          <%=userService.getCurrentUser().getNickname() %>
+	          <span class="caret"></span></a>
+	          <ul class="dropdown-menu">
+	            <li><a href="#">User Profile</a></li>
+	            <li><a href="#">User Setting</a></li>
+	            <li role="separator" class="divider"></li>
+	            <li><a href="<%=userService.createLogoutURL("/") %>">Sign out</a></li>
+	          </ul>
+	        </li>
 	      </ul>
 	    </div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
 	 </nav>
 	 <div class="container">
-		<h3>Please login with your Google account to view your content!</h3>
+		<a class="btn btn-default btn-lg" style="float:left" href='/upload.jsp'>Upload photos</a>
+		<a class="btn btn-default btn-lg" style="float:right" href='/viewphotos.jsp'>View photos</a>
 	</div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
