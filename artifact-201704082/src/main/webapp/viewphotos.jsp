@@ -101,7 +101,7 @@
 <% if (photos!=null) { %>
 <table>
 <tr><th>Your Photos:</th></tr>
-<% int rows = photos.size()/5, lastRowColumns = photos.size()%5; %>
+<% int rows = photos.size()/5; %>
 <% for (int i=0; i<rows; i=i+5) { %>
       <tr>
       	<td> <img src="/serve?blob-key=<%=photos.get(i).getProperty("blob-key")%>" alt="image" height="200" width="250"/> </td>
@@ -112,7 +112,7 @@
       </tr>
 <% } %>
 <tr>
-<% for (int i=rows; i<lastRowColumns; i++) { %>
+<% for (int i=rows*5; i<photos.size(); i++) { %>
    	<td> <img src="/serve?blob-key=<%=photos.get(i).getProperty("blob-key")%>" alt="image" height="200" width="250"/> </td>
 <% } %>
 </tr>
