@@ -7,7 +7,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 	<style>
 	th, td {
 	    padding: 10px;
@@ -52,6 +52,15 @@
 		</select>
 		</div>
 		</td>
+		<td></td>
+		<td>
+			<div class="form-group">
+			<label for="tags">People Tagged:</label>
+			<input class="form-control" type="text" id="tags" name="tags">
+			</div>
+		</td>
+	</tr>
+	<tr>
 		<td>
 		<div class="form-group">
 		<label for="emotion">Emotion:</label>
@@ -68,6 +77,7 @@
 		</select>
 		</div>
 		</td>
+		<td align="center"> - OR - </td>
 		<td>
 		<div class="form-group">
 		<label for="faces">No. of People:</label>
@@ -75,20 +85,16 @@
 		  <option value="any">Any</option>
 		  <option value="1">One person</option>
 		  <option value="2">Two people</option>
-		  <option value="2-5">Two to five people</option>
-		  <option value="5">More than five people</option>
+		  <option value="3">Three people</option>
+		  <option value="4">Four people</option>
+		  <option value="5">Five or more people</option>
 		</select>
 		</div>
 		</td>
-		<td>
-			<div class="form-group">
-			<label for="tags">People Tagged:</label>
-			<input class="form-control" type="text" id="tags" name="tags">
-			</div>
-		</td>
+		
 	</tr>
 	<tr>
-		<td colspan="4">
+		<td colspan="3">
 			<div class="form-group">
 			<input class="form-control" type="submit" value="Apply">
 			</div>
@@ -102,7 +108,7 @@
 <table>
 <tr><th>Your Photos:</th></tr>
 <% int rows = photos.size()/5; %>
-<% for (int i=0; i<rows; i=i+5) { %>
+<% for (int i=0; i<rows*5; i=i+5) { %>
       <tr>
       	<td> <img src="/serve?blob-key=<%=photos.get(i).getProperty("blob-key")%>" alt="image" height="200" width="250"/> </td>
       	<td> <img src="/serve?blob-key=<%=photos.get(i+1).getProperty("blob-key")%>" alt="image" height="200" width="250"/> </td>

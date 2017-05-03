@@ -49,12 +49,14 @@ public class ViewServlet extends HttpServlet {
 			case "2":
 				facesFilter = new FilterPredicate("faces", FilterOperator.EQUAL, 2);
 				break;
-			case "2-5":
-				facesFilter = new FilterPredicate("faces", FilterOperator.LESS_THAN_OR_EQUAL, 5);
-				q.setFilter(new FilterPredicate("faces", FilterOperator.GREATER_THAN, 2));
+			case "3":
+				facesFilter = new FilterPredicate("faces", FilterOperator.EQUAL, 3);
+				break;
+			case "4":
+				facesFilter = new FilterPredicate("faces", FilterOperator.EQUAL, 4);
 				break;
 			case "5":
-				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN, 5);
+				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN_OR_EQUAL, 5);
 				break;
 			default:
 				facesFilter = new FilterPredicate("faces", FilterOperator.GREATER_THAN_OR_EQUAL, 0);
@@ -83,14 +85,14 @@ public class ViewServlet extends HttpServlet {
 				}
 			});
 			break;
-		case "imageSize":
+		/*case "imageSize":
 			Collections.sort(results, new Comparator<Entity>() {
 				@Override
 				public int compare(Entity o1, Entity o2) {
 					return ((Long)o2.getProperty("imageSize")).compareTo((Long)o1.getProperty("imageSize"));
 				}
 			});
-			break;
+			break;*/
 		case "timestamp":
 			Collections.sort(results, new Comparator<Entity>() {
 				@Override
@@ -109,23 +111,28 @@ public class ViewServlet extends HttpServlet {
 		}
 		
 		List<Entity> afterTagFilter = new ArrayList<Entity>();
+		HttpSession session = req.getSession(true);
 		
-		String tags[] = req.getParameter("tags").split(",");
-		for (Entity photo : results) {
-			int tagsFound = 0;
-			for (int i=0; i<tags.length; i++) {
-				System.out.println("tags[i]: "+tags[i]);
-				if (photo.getProperty("tagsString") != null && ((String)photo.getProperty("tagsString")).contains(tags[i])) {
-					tagsFound++;
+		if (req.getParameter("tags")!=null && !req.getParameter("tags").isEmpty()) {
+			String tags[] = req.getParameter("tags").split(",");
+			for (Entity photo : results) {
+				int tagsFound = 0;
+				for (int i = 0; i < tags.length; i++) {
+					System.out.println("tags[i]: " + tags[i]);
+					if (photo.getProperty("tagsString") != null
+							&& ((String) photo.getProperty("tagsString")).contains(tags[i])) {
+						tagsFound++;
+					}
+				}
+				if (tagsFound == tags.length) {
+					afterTagFilter.add(photo);
 				}
 			}
-			if (tagsFound==tags.length) {
-				afterTagFilter.add(photo);
-			}
+			session.setAttribute("photos", afterTagFilter);
 		}
-		
-		HttpSession session = req.getSession(true);
-		session.setAttribute("photos", afterTagFilter);
+		else {
+			session.setAttribute("photos", results);
+		}
 		
 		res.sendRedirect("/viewphotos.jsp");
 		
