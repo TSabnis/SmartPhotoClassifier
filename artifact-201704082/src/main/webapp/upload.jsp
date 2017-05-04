@@ -32,7 +32,7 @@
 	            <li><a href="#">User Profile</a></li>
 	            <li><a href="#">User Setting</a></li>
 	            <li role="separator" class="divider"></li>
-	            <li><a href=<%=userService.createLogoutURL("/") %>">Sign out</a></li>
+	            <li><a href="<%=userService.createLogoutURL("/") %>">Sign out</a></li>
 	          </ul>
 	        </li>
 	      </ul>
