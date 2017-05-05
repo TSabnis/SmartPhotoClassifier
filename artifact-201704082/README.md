@@ -1,3 +1,11 @@
+Project Name: Smart Photo Classifier
+Team Members: Tejal Sabnis, Tinu Tomson
+
+Project URL: https://project20140410.appspot.com/
+
+This project might not run on the local dev app engine because it uses Blobstore API. (upload functionality will fail)
+Please deploy it to Google App Engine in order to use it.
+
 appengine-standard-archetype
 ============================
 
@@ -13,7 +21,7 @@ Initialize the Google Cloud SDK using:
 
     gcloud init
 
-This skeleton is ready to run.
+This project is ready to run.
 
 
 
@@ -35,10 +43,3 @@ This skeleton is ready to run.
 
     gradle test
 
-
-As you add / modify the source code (`src/main/java/...`) it's very useful to add [unit testing](https://cloud.google.com/appengine/docs/java/tools/localunittesting)
-to (`src/main/test/...`).  The following resources are quite useful:
-
-* [Junit4](http://junit.org/junit4/)
-* [Mockito](http://mockito.org/)
-* [Truth](http://google.github.io/truth/)
